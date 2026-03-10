@@ -27,6 +27,7 @@ import {
 	isChatGetThreadMessagesProps,
 	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
+	isChatGetAllStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -57,7 +58,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages, findAllStarredMessages } from '../lib/messages';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -875,6 +876,33 @@ API.v1.addRoute(
 			messages.messages = await normalizeMessagesForUser(messages.messages, this.userId);
 
 			return API.v1.success(messages);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.getAllStarredMessages',
+	{
+		authRequired: true,
+		validateParams: isChatGetAllStarredMessagesProps,
+	},
+	{
+		async get() {
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const result = await findAllStarredMessages({
+				uid: this.userId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
+
+			result.messages = await normalizeMessagesForUser(result.messages, this.userId);
+
+			return API.v1.success(result);
 		},
 	},
 );

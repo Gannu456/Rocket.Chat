@@ -1,4 +1,4 @@
-import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus, IActivityHistory } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -17,6 +17,9 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
+import type { UsersGetActivityHistoryParamsGET } from './users/UsersGetActivityHistoryParamsGET';
+import type { UsersClearActivityHistoryParamsPOST } from './users/UsersClearActivityHistoryParamsPOST';
+import type { UsersRemoveActivityHistoryItemParamsPOST } from './users/UsersRemoveActivityHistoryItemParamsPOST';
 
 type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
@@ -125,6 +128,17 @@ export type DefaultUserInfo = Pick<
 >;
 
 export type UsersEndpoints = {
+	'/v1/users.getActivityHistory': {
+        GET: (params: UsersGetActivityHistoryParamsGET) => PaginatedResult<{
+            history: IActivityHistory[];
+        }>;
+    };
+    '/v1/users.removeActivityHistoryItem': {
+        POST: (params: UsersRemoveActivityHistoryItemParamsPOST) => void;
+    };
+    '/v1/users.clearActivityHistory': {
+        POST: (params: UsersClearActivityHistoryParamsPOST) => void;
+    };
 	'/v1/users.2fa.enableEmail': {
 		POST: () => void;
 	};

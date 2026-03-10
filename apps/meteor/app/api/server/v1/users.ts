@@ -1,6 +1,6 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
+import { Users, Subscriptions, Sessions, ActivityHistory } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -18,6 +18,9 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	isUsersGetActivityHistoryParamsGET,
+    isUsersRemoveActivityHistoryItemParamsPOST,
+    isUsersClearActivityHistoryParamsPOST,
 	ajv,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
@@ -77,6 +80,70 @@ import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+
+API.v1.addRoute(
+    'users.getActivityHistory',
+    { 
+        authRequired: true, 
+        validateParams: isUsersGetActivityHistoryParamsGET 
+    },
+    {
+        async get() {
+            const { offset, count } = await getPaginationItems(this.queryParams);
+            
+            const { cursor, totalCount } = ActivityHistory.findPaginatedByUserId(this.userId, {
+                skip: offset,
+                limit: count,
+                sort: { createdAt: -1 } 
+            });
+
+            const [history, total] = await Promise.all([
+                cursor.toArray(),
+                totalCount,
+            ]);
+
+            return API.v1.success({ 
+                history, 
+                total, 
+                count: history.length, 
+                offset 
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'users.removeActivityHistoryItem',
+    { 
+        authRequired: true,
+        validateParams: isUsersRemoveActivityHistoryItemParamsPOST
+    },
+    {
+        async post() {
+            // Because of validateParams, this.bodyParams is now strongly typed!
+            const { itemId } = this.bodyParams;
+
+            await ActivityHistory.removeByIdAndUserId(itemId, this.userId);
+
+            return API.v1.success();
+        },
+    },
+);
+
+API.v1.addRoute(
+    'users.clearActivityHistory',
+    { 
+        authRequired: true,
+        validateParams: isUsersClearActivityHistoryParamsPOST
+    },
+    {
+        async post() {
+            await ActivityHistory.removeByUserId(this.userId);
+
+            return API.v1.success();
+        },
+    },
+);
 
 API.v1.addRoute(
 	'users.getAvatar',

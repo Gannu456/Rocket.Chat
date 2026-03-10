@@ -1,4 +1,10 @@
-import type { RocketChatRecordDeleted, ISubscription, ILivechatInquiryRecord, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type {
+	RocketChatRecordDeleted,
+	ISubscription,
+	ILivechatInquiryRecord,
+	ILivechatDepartmentAgents,
+	IActivityHistory,
+} from '@rocket.chat/core-typings';
 import {
 	AnalyticsRaw,
 	AppsLogsModel,
@@ -77,6 +83,7 @@ import {
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
 	AbacAttributesRaw,
+	ActivityHistoryRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -165,3 +172,7 @@ registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
+registerModel(
+	'IActivityHistoryModel',
+	new ActivityHistoryRaw(db, trashCollection as Collection<RocketChatRecordDeleted<IActivityHistory>>),
+);

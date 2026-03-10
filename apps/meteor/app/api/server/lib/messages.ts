@@ -1,5 +1,5 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { Rooms, Messages, Users } from '@rocket.chat/models';
+import { Rooms, Messages, Users, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -71,6 +71,63 @@ export async function findStarredMessages({
 		skip: offset,
 		limit: count,
 	});
+
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return {
+		messages,
+		count: messages.length,
+		offset,
+		total,
+	};
+}
+
+export async function findAllStarredMessages({
+	uid,
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
+}): Promise<{
+	messages: IMessage[];
+	count: number;
+	offset: number;
+	total: number;
+}> {
+    // 1. Verify User exists
+	const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
+	if (!user) {
+		throw new Error('invalid-user');
+	}
+
+    // 2. Security: Get all Room IDs (rids) the user is currently subscribed to.
+    // This ensures we don't show starred messages from private channels the user was removed from.
+    const subscriptions = await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray();
+    const allowedRoomIds = subscriptions.map((sub) => sub.rid);
+
+    if (allowedRoomIds.length === 0) {
+        return {
+            messages: [],
+            count: 0,
+            offset,
+            total: 0,
+        };
+    }
+
+    // 3. Query: Find messages starred by UID, belonging to allowed rooms
+    const query = {
+        'starred._id': uid,
+        rid: { $in: allowedRoomIds },
+    };
+
+    // 4. Fetch Data
+	const cursor = Messages.find(query, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const totalCount = Messages.countDocuments(query);
 
 	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 

@@ -12,6 +12,8 @@ import '../lib/settingsRegenerator';
 import { performMigrationProcedure } from './migrations';
 import { isRunningMs } from '../lib/isRunningMs';
 
+import '../lib/activityHistory/recordActivity';
+
 export const startup = async () => {
 	await performMigrationProcedure();
 

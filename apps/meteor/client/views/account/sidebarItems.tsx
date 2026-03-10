@@ -60,4 +60,14 @@ export const {
 		i18nLabel: 'Accessibility_and_Appearance',
 		icon: 'person-arms-spread',
 	},
+	{
+		href: '/account/history',
+		i18nLabel: 'History',
+		icon: 'clock',
+	},
+	{
+		href: '/account/starredMessages',
+		i18nLabel: 'Starred Messages',
+		icon: 'star',
+	},
 ]);

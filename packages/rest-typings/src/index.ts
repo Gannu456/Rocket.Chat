@@ -239,6 +239,10 @@ export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/moderation';
 export * from './v1/server-events';
 
+export * from './v1/users/UsersGetActivityHistoryParamsGET';
+export * from './v1/users/UsersRemoveActivityHistoryItemParamsPOST';
+export * from './v1/users/UsersClearActivityHistoryParamsPOST';
+
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';

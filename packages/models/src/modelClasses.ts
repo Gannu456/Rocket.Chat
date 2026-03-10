@@ -75,3 +75,4 @@ export * from './models/MediaCallNegotiations';
 export * from './models/WorkspaceCredentials';
 export * from './models/Trash';
 export * from './models/CallHistory';
+export * from './models/ActivityHistory';

@@ -32,6 +32,7 @@ export * from './IPushNotificationConfig';
 export * from './SlashCommands';
 export * from './license';
 
+export * from './IActivityHistory';
 export * from './IUserDataFile';
 export * from './IUserSession';
 export * from './IUserStatus';

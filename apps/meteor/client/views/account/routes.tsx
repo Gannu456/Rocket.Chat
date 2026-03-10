@@ -40,6 +40,14 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/accessibility-and-appearance';
 			pattern: '/account/accessibility-and-appearance';
 		};
+		'history': {
+			pathname: '/account/history';
+			pattern: '/account/history';
+		};
+		'starredMessages': {
+			pathname: '/account/starredMessages';
+			pattern: '/account/starredMessages';
+		};
 	}
 }
 
@@ -87,4 +95,14 @@ registerAccountRoute('/feature-preview', {
 registerAccountRoute('/accessibility-and-appearance', {
 	name: 'accessibility-and-appearance',
 	component: lazy(() => import('./accessibility/AccessibilityPage')),
+});
+
+registerAccountRoute('/history', {
+	name: 'history',
+	component: lazy(() => import('./history/AccountHistoryPage')),
+});
+
+registerAccountRoute('/starredMessages', {
+	name: 'starredMessages',
+	component: lazy(() => import('./starredMessages/StarredMessagesPage')),
 });

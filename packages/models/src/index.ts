@@ -4,6 +4,7 @@ import type {
 	ISetting,
 	ISubscription,
 	RocketChatRecordDeleted,
+	IActivityHistory,
 } from '@rocket.chat/core-typings';
 import type {
 	IAnalyticsModel,
@@ -88,6 +89,7 @@ import type {
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 	IAbacAttributesModel,
+	IActivityHistoryModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -115,6 +117,7 @@ import {
 	UsersSessionsRaw,
 	AbacAttributesRaw,
 	ServerEventsRaw,
+	ActivityHistoryRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -214,6 +217,7 @@ export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
+export const ActivityHistory = proxify<IActivityHistoryModel>('IActivityHistoryModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
@@ -249,4 +253,5 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
+	registerModel('IActivityHistoryModel', () => new ActivityHistoryRaw(db, trash as Collection<RocketChatRecordDeleted<IActivityHistory>>));
 }
